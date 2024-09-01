@@ -1,5 +1,6 @@
 import { Sequelize } from 'sequelize';
 import { POSTGRES_DB } from './config';
+import logger from './logger';
 
 export const sequelize: Sequelize = new Sequelize(POSTGRES_DB, {
 	// host: 'localhost',
@@ -21,8 +22,8 @@ export async function connectDB(): Promise<void> {
 		// Sync all defined models to the DB.
 		await sequelize.sync();
 
-		console.log('Connected to the Database Successfully...');
+		logger.info('Connected to the Database Successfully...');
 	} catch (err) {
-		console.log(err);
+		logger.error('DB Connection Error: ', err);
 	}
 }

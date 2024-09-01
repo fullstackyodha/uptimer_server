@@ -23,6 +23,7 @@
 		"express-async-errors": "^3.1.1",
 		"graphql": "^16.9.0",
 		"pg": "^8.12.0",
+		"pino": "^9.3.2",
 		"sequelize": "^6.37.3",
 		"typescript": "^5.5.4",
 		"typescript-transform-paths": "^3.5.0"

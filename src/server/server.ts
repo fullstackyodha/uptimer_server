@@ -22,6 +22,7 @@ import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin
 import { ApolloServerPluginLandingPageDisabled } from '@apollo/server/plugin/disabled';
 import { expressMiddleware } from '@apollo/server/express4';
 import cookieSession from 'cookie-session';
+import logger from './logger';
 
 const typeDefs = `#graphql
 	type User{
@@ -95,6 +96,14 @@ export default class MonitorServer {
 		);
 		// MOUNTING THE GRAPHQL ROUTE
 		this.graphQLRoute(app);
+
+		this.healthRoute(app);
+	}
+
+	private healthRoute(app: Express) {
+		app.get('/health', (_: Request, res: Response) => {
+			res.status(200).send('Uptimer Monitor is Healthy.');
+		});
 	}
 
 	private graphQLRoute(app: Express) {
@@ -131,7 +140,7 @@ export default class MonitorServer {
 		try {
 			const SERVER_PORT: number = parseInt(PORT!, 10) || 5000;
 
-			console.info(
+			logger.info(
 				'Starting server on port:',
 				SERVER_PORT,
 				', with process id:',
@@ -139,12 +148,12 @@ export default class MonitorServer {
 			);
 
 			this.httpServer.listen(SERVER_PORT, () => {
-				console.info(
+				logger.info(
 					`Server is running at http://localhost:${SERVER_PORT}`
 				);
 			});
 		} catch (error) {
-			console.error('Error starting server:', error);
+			logger.error('Error starting server:', error);
 		}
 	}
 }
