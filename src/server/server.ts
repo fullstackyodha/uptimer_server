@@ -15,7 +15,7 @@ import {
 	json,
 	urlencoded,
 } from 'express';
-import { ApolloServer } from '@apollo/server';
+import { ApolloServer, BaseContext } from '@apollo/server';
 import { makeExecutableSchema } from '@graphql-tools/schema';
 import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHttpServer';
 import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin/landingPage/default';
@@ -23,24 +23,20 @@ import { ApolloServerPluginLandingPageDisabled } from '@apollo/server/plugin/dis
 import { expressMiddleware } from '@apollo/server/express4';
 import cookieSession from 'cookie-session';
 import logger from './logger';
-
-const typeDefs = `#graphql
-	type User{
-		username:String
-	}
-
-	type Query{
-		user: User
-	}
-`;
+import { mergeGraphQLSchema } from '@app/graphql/schema';
+import { GraphQLSchema } from 'graphql';
 
 const resolvers = {
-	Query: {
-		user: () => {
-			username: 'Mike';
-		},
-	},
+	// Query: {
+	// 	user: () => {
+	// 		username: 'Mike';
+	// 	},
+	// },
 };
+export interface AppContext {
+	req: Request;
+	res: Response;
+}
 
 export default class MonitorServer {
 	private app: Express;
@@ -52,8 +48,11 @@ export default class MonitorServer {
 		this.httpServer = new http.Server(this.app);
 
 		// Builds a schema from the provided type definitions and resolvers.
-		const schema = makeExecutableSchema({ typeDefs, resolvers });
-		this.server = new ApolloServer({
+		const schema: GraphQLSchema = makeExecutableSchema({
+			typeDefs: mergeGraphQLSchema,
+			resolvers,
+		});
+		this.server = new ApolloServer<AppContext | BaseContext>({
 			schema,
 			introspection: NODE_ENV !== 'production',
 			plugins: [
@@ -141,10 +140,7 @@ export default class MonitorServer {
 			const SERVER_PORT: number = parseInt(PORT!, 10) || 5000;
 
 			logger.info(
-				'Starting server on port:',
-				SERVER_PORT,
-				', with process id:',
-				process.pid
+				`Starting server on port: ${SERVER_PORT}, with process id: ${process.pid}`
 			);
 
 			this.httpServer.listen(SERVER_PORT, () => {
