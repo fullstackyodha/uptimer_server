@@ -23,16 +23,10 @@ import { ApolloServerPluginLandingPageDisabled } from '@apollo/server/plugin/dis
 import { expressMiddleware } from '@apollo/server/express4';
 import cookieSession from 'cookie-session';
 import logger from './logger';
-import { mergeGraphQLSchema } from '@app/graphql/schema';
 import { GraphQLSchema } from 'graphql';
+import { mergeGraphQLSchema } from '@app/graphql/schema';
+import { resolvers } from '@app/graphql/resolvers';
 
-const resolvers = {
-	// Query: {
-	// 	user: () => {
-	// 		username: 'Mike';
-	// 	},
-	// },
-};
 export interface AppContext {
 	req: Request;
 	res: Response;
@@ -50,7 +44,7 @@ export default class MonitorServer {
 		// Builds a schema from the provided type definitions and resolvers.
 		const schema: GraphQLSchema = makeExecutableSchema({
 			typeDefs: mergeGraphQLSchema,
-			resolvers,
+			resolvers: resolvers,
 		});
 		this.server = new ApolloServer<AppContext | BaseContext>({
 			schema,

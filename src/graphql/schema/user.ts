@@ -25,12 +25,12 @@ export const userSchema = buildSchema(`#graphql
         id: ID!
         userId: String!
         groupName: String!
-        email: String!
+        emails: String!
     }
 
     type AuthResponse{
         user: User
-        notification:  [NotificationResult!]!  # Non Nullable Value
+        notifications:  [NotificationResult!]!  # Non Nullable Value
     }
 
     type AuthLogoutResponse{
@@ -39,7 +39,7 @@ export const userSchema = buildSchema(`#graphql
 
     type CheckCurrentResponse{
         user: User
-        notification: [NotificationResult!]
+        notifications: [NotificationResult!]
     }
 
     type Query{
